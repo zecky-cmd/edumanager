@@ -14,14 +14,14 @@ import { AuthService, AuthResponse } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { User } from '@prisma/client';
+import { User, SanitizedUser } from '../users/entities/user.entity';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService) { }
 
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
@@ -39,7 +39,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async changePassword(
-    @Req() req: Request & { user: User },
+    @Req() req: Request & { user: SanitizedUser },
     @Body() dto: ChangePasswordDto,
   ): Promise<void> {
     await this.authService.changePassword(req.user.id, dto);
@@ -60,8 +60,7 @@ export class AuthController {
   @Get('me')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
-  me(@Req() req: Request & { user: User }): { user: Omit<User, 'password'> } {
-    const { password: _, ...user } = req.user;
-    return { user };
+  me(@Req() req: Request & { user: SanitizedUser }): { user: SanitizedUser } {
+    return { user: req.user };
   }
 }

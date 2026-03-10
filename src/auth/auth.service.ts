@@ -9,6 +9,7 @@ import { UsersService } from '../users/users.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { User, RoleUser } from '@prisma/client';
+import { SanitizedUser } from '../users/entities/user.entity';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
@@ -31,7 +32,7 @@ export class AuthService {
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
     private readonly databaseService: DatabaseService,
-  ) {}
+  ) { }
 
   async register(registerDto: RegisterDto): Promise<AuthResponse> {
     const existing = await this.usersService.findByEmail(registerDto.email);
@@ -70,7 +71,7 @@ export class AuthService {
   }
 
   async changePassword(userId: number, dto: ChangePasswordDto): Promise<void> {
-    const user = await this.usersService.findOne(userId);
+    const user = await this.usersService.findByIdForAuth(userId);
     if (!user) {
       throw new NotFoundException('Utilisateur non trouvé');
     }
@@ -139,7 +140,7 @@ export class AuthService {
     });
   }
 
-  private buildAuthResponse(user: User): AuthResponse {
+  private buildAuthResponse(user: User | SanitizedUser): AuthResponse {
     const payload = { sub: user.id, email: user.email };
     const access_token = this.jwtService.sign(payload);
     return {

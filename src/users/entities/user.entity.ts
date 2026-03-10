@@ -1,2 +1,6 @@
-export type { User } from '@prisma/client';
+import { User } from '@prisma/client';
+
+export type { User };
 export { RoleUser } from '@prisma/client';
+
+export type SanitizedUser = Omit<User, 'password' | 'tokenReset' | 'tokenExpiry'>;
