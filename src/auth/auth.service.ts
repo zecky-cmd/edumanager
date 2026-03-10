@@ -67,6 +67,13 @@ export class AuthService {
     if (!valid) {
       throw new UnauthorizedException('Email ou mot de passe incorrect');
     }
+
+    // Mettre à jour la date de dernière connexion
+    await this.databaseService.user.update({
+      where: { id: user.id },
+      data: { derniereConnexion: new Date() },
+    });
+
     return this.buildAuthResponse(user);
   }
 
