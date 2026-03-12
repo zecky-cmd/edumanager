@@ -16,11 +16,32 @@ export class BulletinController {
 
   @Post()
   @Roles(RoleUser.adm, RoleUser.dir)
-  @ApiOperation({ summary: 'Générer un bulletin scolaire' })
+  @ApiOperation({ summary: 'Générer un bulletin scolaire (Manuel)' })
   @ApiResponse({ status: 201, description: 'Le bulletin a été généré avec succès' })
   @ApiResponse({ status: 403, description: 'Interdit - Rôle insuffisant' })
   create(@Body() dto: CreateBulletinDto) {
     return this.bulletinService.create(dto);
+  }
+
+  @Post('generate-eleve/:eleveId/:periodeId')
+  @Roles(RoleUser.adm, RoleUser.dir)
+  @ApiOperation({ summary: 'Calculer la moyenne d\'un élève' })
+  async generateForEleve(
+    @Param('eleveId', ParseIntPipe) eleveId: number,
+    @Param('periodeId', ParseIntPipe) periodeId: number,
+    @Body('userId', ParseIntPipe) userId: number, // ID de l'admin qui valide
+  ) {
+    return this.bulletinService.calculerResultats(eleveId, periodeId, userId);
+  }
+
+  @Post('rank-classe/:classeId/:periodeId')
+  @Roles(RoleUser.adm, RoleUser.dir)
+  @ApiOperation({ summary: 'Calculer les rangs d\'une classe' })
+  async rankClasse(
+    @Param('classeId', ParseIntPipe) classeId: number,
+    @Param('periodeId', ParseIntPipe) periodeId: number,
+  ) {
+    return this.bulletinService.attribuerRangs(classeId, periodeId);
   }
 
   @Get('eleve/:id')

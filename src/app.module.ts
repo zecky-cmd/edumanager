@@ -27,6 +27,7 @@ import { ActivityLogModule } from './activity-log/activity-log.module';
 import { MatiereNiveauModule } from './matiere-niveau/matiere-niveau.module';
 import { EvaluationModule } from './evaluation/evaluation.module';
 import { NoteModule } from './note/note.module';
+import { DashboardModule } from './dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -60,6 +61,7 @@ import { NoteModule } from './note/note.module';
     MatiereNiveauModule,
     EvaluationModule,
     NoteModule,
+    DashboardModule,
   ],
   controllers: [AppController],
   providers: [

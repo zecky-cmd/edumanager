@@ -59,4 +59,15 @@ export class PaiementController {
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.paiementService.remove(id);
   }
+
+  @Get('situation/:eleveId')
+  @Roles(RoleUser.adm, RoleUser.dir, RoleUser.par)
+  @ApiOperation({ summary: 'Récupérer la situation financière d\'un élève' })
+  @ApiQuery({ name: 'anneeId', required: false, description: 'ID de l\'année scolaire (optionnel)' })
+  async getSituation(
+    @Param('eleveId', ParseIntPipe) eleveId: number,
+    @Query('anneeId') anneeId?: string,
+  ) {
+    return this.paiementService.getSituationFinanciere(eleveId, anneeId ? +anneeId : undefined);
+  }
 }

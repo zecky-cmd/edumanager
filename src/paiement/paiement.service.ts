@@ -74,4 +74,59 @@ export class PaiementService {
       throw error;
     }
   }
+
+  /**
+   * Calcule la situation financière d'un élève pour l'année en cours.
+   */
+  async getSituationFinanciere(eleveId: number, anneeId?: number) {
+    // 1. Déterminer l'année scolaire (si non fournie, prendre l'active)
+    let finalAnneeId: number | undefined = anneeId;
+    if (!finalAnneeId) {
+      const config = await this.databaseService.etablissementConfig.findFirst();
+      finalAnneeId = config?.anneeActiveId ?? undefined;
+    }
+
+    if (!finalAnneeId) throw new NotFoundException("Aucune année scolaire active trouvée");
+
+    // 2. Récupérer l'inscription et le cycle de l'élève
+    const inscription = await this.databaseService.inscription.findUnique({
+      where: { anneeId_eleveId: { anneeId: finalAnneeId, eleveId } },
+      include: { classe: true },
+    });
+
+    if (!inscription) throw new NotFoundException(`Élève ${eleveId} non inscrit pour l'année ${finalAnneeId}`);
+
+    const cycleEleve = inscription.classe.cycle;
+
+    // 3. Calculer le total des rubriques obligatoires pour ce cycle
+    const rubriques = await this.databaseService.rubriqueFinanciere.findMany({
+      where: {
+        anneeId: finalAnneeId,
+        estObligatoire: true,
+        OR: [{ cycle: 'tous' }, { cycle: cycleEleve as any }],
+      },
+    });
+
+    const totalDu = rubriques.reduce((sum, r) => sum + parseFloat(r.montant.toString()), 0);
+
+    // 4. Calculer le total déjà payé par l'élève pour cette année
+    const paiements = await this.databaseService.paiement.findMany({
+      where: {
+        eleveId,
+        rubrique: { anneeId: finalAnneeId },
+      },
+    });
+
+    const totalPaye = paiements.reduce((sum, p) => sum + parseFloat(p.montant.toString()), 0);
+
+    return {
+      eleveId,
+      anneeId: finalAnneeId,
+      cycle: cycleEleve,
+      totalDu,
+      totalPaye,
+      resteAPayer: totalDu - totalPaye,
+      detailsRubriques: rubriques,
+    };
+  }
 }
