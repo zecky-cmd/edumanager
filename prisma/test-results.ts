@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('📊 Calcul des résultats pour le scénario "Les Elites"...');
+  console.log('Calcul des résultats pour le scénario "Les Elites"...');
 
   const annee = await prisma.anneeScolaire.findFirst({ where: { libelle: '2025-2026' } });
   const periode = await prisma.periode.findFirst({ where: { anneeId: annee!.id } });
@@ -63,7 +63,7 @@ async function main() {
       update: { moyenneGenerale: moyGen, mention, valideParId: admin!.id },
       create: { eleveId: eleve.id, periodeId: periode!.id, moyenneGenerale: moyGen, mention, valideParId: admin!.id }
     });
-    console.log(`✅ Moyenne calculée pour ${eleve.user?.nom}: ${moyGen.toFixed(2)}`);
+    console.log(`Moyenne calculée pour ${eleve.user?.nom}: ${moyGen.toFixed(2)}`);
   }
 
   // --- 2. Calcul des Rangs ---
@@ -78,7 +78,7 @@ async function main() {
       data: { rang: i + 1 }
     });
   }
-  console.log('🏆 Rangs attribués avec succès !');
+  console.log('Rangs attribués avec succès !');
 
   // --- 3. Affichage final ---
   const results = await prisma.bulletin.findMany({

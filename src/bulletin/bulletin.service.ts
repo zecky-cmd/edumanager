@@ -83,7 +83,17 @@ export class BulletinService {
     else if (moyenneGenerale >= 14) mention = 'bien';
     else if (moyenneGenerale >= 10) mention = 'pass';
 
-    // 5. Upsert du bulletin
+    // 5. Récupérer l'inscription pour avoir la classeId
+    const inscription = await this.databaseService.inscription.findFirst({
+      where: {
+        eleveId,
+        annee: { periodes: { some: { id: periodeId } } },
+      },
+    });
+
+    if (!inscription) throw new NotFoundException(`Aucune inscription trouvée pour l'élève ${eleveId}`);
+
+    // 6. Upsert du bulletin avec classeId
     return this.databaseService.bulletin.upsert({
       where: {
         eleveId_periodeId: { eleveId, periodeId },
@@ -92,6 +102,7 @@ export class BulletinService {
         moyenneGenerale: new Decimal(moyenneGenerale.toFixed(2)),
         mention,
         valideParId,
+        classeId: inscription.classeId,
       },
       create: {
         eleveId,
@@ -99,6 +110,7 @@ export class BulletinService {
         moyenneGenerale: new Decimal(moyenneGenerale.toFixed(2)),
         mention,
         valideParId,
+        classeId: inscription.classeId,
       },
     });
   }

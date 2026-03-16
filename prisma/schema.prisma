@@ -84,6 +84,7 @@ model Classe {
 
   inscriptions   Inscription[]
   matieresNiveau MatiereNiveau[]
+  bulletins      Bulletin[]
 }
 
 enum CycleMatiere {
@@ -301,6 +302,8 @@ model Bulletin {
   id              Int              @id @default(autoincrement())
   eleveId         Int
   eleve           Eleve            @relation(fields: [eleveId], references: [id], onDelete: Cascade)
+  classeId        Int
+  classe          Classe           @relation(fields: [classeId], references: [id], onDelete: Cascade)
   periodeId       Int
   periode         Periode          @relation(fields: [periodeId], references: [id])
   valideParId     Int
