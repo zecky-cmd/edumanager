@@ -4,7 +4,7 @@ import * as bcrypt from 'bcrypt';
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('🚀 Démarrage du seed pour le scénario "Les Elites"...');
+  console.log('Démarrage du seed pour le scénario "Les Elites"...');
 
   // --- 1. Année Scolaire & Période ---
   const annee = await prisma.anneeScolaire.create({
@@ -196,7 +196,7 @@ async function main() {
     },
   });
 
-  console.log('✅ Seed terminé avec succès !');
+  console.log('Seed terminé avec succès !');
   console.log('Utilise les emails pour tester le login (password: password123)');
 }
 

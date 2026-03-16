@@ -16,14 +16,20 @@ lerna-debug.log*
 .DS_Store
 
 # Tests
-/test
+#/test  <-- NE PAS IGNORER : Tes tests E2E doivent être sur GitHub !
 /coverage
 /.nyc_output
 /.test-results
 .test-results
+e2e_debug.log
+test_error.txt
+test_out.log
 
-/.seed-test.ts
-.seed-test.ts
+# Scripts temporaires / Maintenance
+test-init.ts
+prisma/fix-bulletins.ts
+prisma/test-results.ts
+prisma/cleanup.ts
 
 # IDEs and editors
 /.idea
@@ -47,7 +53,7 @@ lerna-debug.log*
 .env.test.local
 .env.production.local
 .env.local
-.env.example
+#.env.example <-- NE PAS IGNORER : C'est le modèle pour les autres !
 
 # temp directory
 .temp
