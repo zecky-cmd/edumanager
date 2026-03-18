@@ -10,7 +10,7 @@ async function bootstrap() {
     console.log('Application initialisée avec succès !');
     await app.close();
   } catch (error) {
-    console.error('❌ Échec de l\'initialisation de l\'application :');
+    console.error('Échec de l\'initialisation de l\'application :');
     console.error(error);
     process.exit(1);
   }

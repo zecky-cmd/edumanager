@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('🧹 Nettoyage de la base de données (Ordre strict)...');
+  console.log('Nettoyage de la base de données (Ordre strict)...');
   
   // Niveau 1 (Feuilles les plus dépendantes)
   await prisma.note.deleteMany();
@@ -39,7 +39,7 @@ async function main() {
   await prisma.matiere.deleteMany();
   await prisma.anneeScolaire.deleteMany();
 
-  console.log('✨ Base de données nettoyée !');
+  console.log('Base de données nettoyée !');
 }
 
 main().catch(e => console.error(e)).finally(() => prisma.$disconnect());

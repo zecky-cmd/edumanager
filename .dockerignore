@@ -1,0 +1,16 @@
+node_modules
+dist
+npm-debug.log
+error.log
+.env
+.git
+.vscode
+test
+coverage
+*.md
+docker-compose*
+Dockerfile
+.dockerignore
+e2e_debug.log
+test_error.txt
+test_out.log
