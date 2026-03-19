@@ -15,7 +15,7 @@ COPY . .
 
 # Générer le client Prisma
 # RUN npx prisma generate
-RUN DATABASE_URL="postgresql://postgres:Eze-codeur225@db.vtesjixllzvpvmmvvgoj.supabase.co:5432/postgres" npx prisma generate
+RUN DATABASE_URL="postgresql://user:password@localhost:5432/db" npx prisma generate
 
 # Compiler le projet NestJS
 RUN npm run build
