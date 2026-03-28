@@ -3,7 +3,8 @@
 [![NestJS](https://img.shields.io/badge/Framework-NestJS%2011-E0234E?logo=nestjs&logoColor=white)](https://nestjs.com/)
 [![Prisma](https://img.shields.io/badge/ORM-Prisma-2D3748?logo=prisma&logoColor=white)](https://prisma.io/)
 [![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL-336791?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
-[![Railway](https://img.shields.io/badge/Deploy-Railway-0B0D0E?logo=railway&logoColor=white)](https://railway.app/)
+[![Railway](https://img.shields.io/badge/Deploy%20API-Railway-0B0D0E?logo=railway&logoColor=white)](https://railway.app/)
+[![Vercel](https://img.shields.io/badge/Deploy%20Web-Vercel-000000?logo=vercel&logoColor=white)](https://vercel.com/)
 
 > Une solution backend robuste et scalable pour la digitalisation complète de la gestion académique et administrative.
 
@@ -57,6 +58,7 @@ npm run test:e2e
 L'API est certifiée "Production Ready" et déployée sur **Railway** avec une architecture de base de données managée sur **Supabase**.
 - **URL API** : `https://edumanager.up.railway.app/api`
 - **Documentation UI** : `https://edumanager.up.railway.app/api/docs`
+- **Web App (Frontend)** : `https://edumanager-app.vercel.app/`
 
 ---
 *Projet développé dans une optique de Clean Architecture et de performance.*
