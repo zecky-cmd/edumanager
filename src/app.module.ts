@@ -28,6 +28,7 @@ import { MatiereNiveauModule } from './matiere-niveau/matiere-niveau.module';
 import { EvaluationModule } from './evaluation/evaluation.module';
 import { NoteModule } from './note/note.module';
 import { DashboardModule } from './dashboard/dashboard.module';
+import { EtudiantModule } from './etudiant/etudiant.module';
 
 @Module({
   imports: [
@@ -62,6 +63,7 @@ import { DashboardModule } from './dashboard/dashboard.module';
     EvaluationModule,
     NoteModule,
     DashboardModule,
+    EtudiantModule,
   ],
   controllers: [AppController],
   providers: [
