@@ -6,9 +6,7 @@ import { Pool } from 'pg';
 @Injectable()
 export class DatabaseService extends PrismaClient implements OnModuleInit {
   constructor() {
-    const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-    const adapter = new PrismaPg(pool);
-    super({ adapter });
+    super();
   }
   async onModuleInit() {
     await this.$connect();

@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Param, Delete, ParseIntPipe, Patch, UseGua
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { BulletinService } from './bulletin.service';
 import { CreateBulletinDto } from './dto/create-bulletin.dto';
+import { CalculClasseDto } from './dto/calcul-classe.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -42,6 +43,13 @@ export class BulletinController {
     @Param('periodeId', ParseIntPipe) periodeId: number,
   ) {
     return this.bulletinService.attribuerRangs(classeId, periodeId);
+  }
+
+  @Post('calculer-classe')
+  @Roles(RoleUser.adm, RoleUser.dir)
+  @ApiOperation({ summary: 'Tout calculer pour une classe (Moyennes + Rangs)' })
+  async calculerClasse(@Body() dto: CalculClasseDto) {
+    return this.bulletinService.calculerClasseResultats(dto);
   }
 
   @Get('eleve/:id')

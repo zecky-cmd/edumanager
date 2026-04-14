@@ -16,10 +16,12 @@ export class BulletinCalculService {
 
     const inscription = await this._fetchInscription(eleveId, periodeId);
 
+    console.log(`Calcul Bulletin : Elève ${eleveId}, Moyenne: ${moyenneGenerale.toFixed(2)}, Mention: ${mention}`);
+
     return this.databaseService.bulletin.upsert({
       where: { eleveId_periodeId: { eleveId, periodeId } },
       update: {
-        moyenneGenerale: toDecimal(moyenneGenerale),
+        moyenneGenerale: moyenneGenerale.toFixed(2) as any,
         mention,
         valideParId,
         classeId: inscription.classeId,
@@ -27,7 +29,7 @@ export class BulletinCalculService {
       create: {
         eleveId,
         periodeId,
-        moyenneGenerale: toDecimal(moyenneGenerale),
+        moyenneGenerale: moyenneGenerale.toFixed(2) as any,
         mention,
         valideParId,
         classeId: inscription.classeId,
