@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
 import { CreateEvaluationDto } from './dto/create-evaluation.dto';
+import { CreateEvalWithNotesDto } from './dto/create-eval-with-notes.dto';
 
 @Injectable()
 export class EvaluationService {
@@ -16,6 +17,31 @@ export class EvaluationService {
         periode: true,
       },
     });
+  }
+
+  async createWithNotes(dto: CreateEvalWithNotesDto) {
+    const { notes, ...evalData } = dto;
+
+    const evaluation = await this.databaseService.$transaction(async (tx) => {
+      // 1. Créer l'évaluation
+      const createdEval = await tx.evaluation.create({
+        data: evalData,
+      });
+
+      // 2. Créer toutes les notes rattachées
+      if (notes && notes.length > 0) {
+        await tx.note.createMany({
+          data: notes.map((n) => ({
+            ...n,
+            evaluationId: createdEval.id,
+          })),
+        });
+      }
+
+      return createdEval;
+    });
+
+    return this.findOne(evaluation.id);
   }
 
   async findAll(matiereNiveauId?: number, periodeId?: number) {

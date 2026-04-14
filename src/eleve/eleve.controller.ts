@@ -3,6 +3,7 @@ import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagg
 import { EleveService } from './eleve.service';
 import { CreateEleveDto } from './dto/create-eleve.dto';
 import { UpdateEleveDto } from './dto/update-eleve.dto';
+import { InscriptionCompleteDto } from './dto/inscription-complete.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -22,6 +23,14 @@ export class EleveController {
   @ApiResponse({ status: 403, description: 'Interdit - Rôle insuffisant' })
   create(@Body() dto: CreateEleveDto) {
     return this.eleveService.create(dto);
+  }
+
+  @Post('inscription-complete')
+  @Roles(RoleUser.adm, RoleUser.dir)
+  @ApiOperation({ summary: 'Inscription complète (User + Eleve + Inscription)' })
+  @ApiResponse({ status: 201, description: 'L\'inscription complète a été réussie' })
+  inscriptionComplete(@Body() dto: InscriptionCompleteDto) {
+    return this.eleveService.inscriptionComplete(dto);
   }
 
   @Get()

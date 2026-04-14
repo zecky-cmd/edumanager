@@ -1,7 +1,10 @@
 import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 import { DatabaseService } from 'src/database/database.service';
 import { CreateEleveDto } from './dto/create-eleve.dto';
 import { UpdateEleveDto } from './dto/update-eleve.dto';
+import { InscriptionCompleteDto } from './dto/inscription-complete.dto';
+import { RoleUser } from '@prisma/client';
 
 @Injectable()
 export class EleveService {
@@ -44,6 +47,61 @@ export class EleveService {
           },
         },
       },
+    });
+  }
+
+  async inscriptionComplete(dto: InscriptionCompleteDto) {
+    // 1. Vérifier si l'email existe déjà
+    const existingUser = await this.databaseService.user.findUnique({
+      where: { email: dto.email },
+    });
+    if (existingUser) {
+      throw new ConflictException(`L'email ${dto.email} est déjà utilisé`);
+    }
+
+    // 2. Hacher le mot de passe
+    const hashedPassword = await bcrypt.hash(dto.password, 10);
+
+    // 3. Transaction atomique
+    return this.databaseService.$transaction(async (tx) => {
+      // Créer l'utilisateur
+      const user = await tx.user.create({
+        data: {
+          email: dto.email,
+          password: hashedPassword,
+          role: RoleUser.elv,
+          nom: dto.nom,
+          prenom: dto.prenom,
+        },
+      });
+
+      // Créer le profil élève
+      const eleve = await tx.eleve.create({
+        data: {
+          userId: user.id,
+          sexe: dto.sexe,
+          dateNaissance: dto.dateNaissance,
+          lieuNaissance: dto.lieuNaissance,
+          nationalite: dto.nationalite,
+          matricule: `ELV${Date.now()}${Math.floor(Math.random() * 1000)}`,
+        },
+      });
+
+      // Créer l'inscription
+      await tx.inscription.create({
+        data: {
+          eleveId: eleve.id,
+          classeId: dto.classeId,
+          anneeId: dto.anneeId,
+        },
+      });
+
+      return {
+        message: 'Inscription complète réussie',
+        eleveId: eleve.id,
+        userId: user.id,
+        email: user.email,
+      };
     });
   }
 

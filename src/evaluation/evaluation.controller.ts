@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Param, Delete, ParseIntPipe, Query, UseGua
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery, ApiBearerAuth } from '@nestjs/swagger';
 import { EvaluationService } from './evaluation.service';
 import { CreateEvaluationDto } from './dto/create-evaluation.dto';
+import { CreateEvalWithNotesDto } from './dto/create-eval-with-notes.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -21,6 +22,15 @@ export class EvaluationController {
   @ApiResponse({ status: 403, description: 'Interdit - Rôle insuffisant' })
   create(@Body() dto: CreateEvaluationDto) {
     return this.evaluationService.create(dto);
+  }
+
+  @Post('saisie-collective')
+  @Roles(RoleUser.adm, RoleUser.dir, RoleUser.ens)
+  @ApiOperation({ summary: 'Créer une évaluation et saisir les notes de la classe' })
+  @ApiResponse({ status: 201, description: 'L\'évaluation et les notes ont été créées avec succès' })
+  @ApiResponse({ status: 403, description: 'Interdit - Rôle insuffisant' })
+  createWithNotes(@Body() dto: CreateEvalWithNotesDto) {
+    return this.evaluationService.createWithNotes(dto);
   }
 
   @Get()
