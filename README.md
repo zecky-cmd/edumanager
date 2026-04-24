@@ -56,8 +56,8 @@ npm run test:e2e
 
 ## Déploiement
 L'API est certifiée "Production Ready" et déployée sur **Railway** avec une architecture de base de données managée sur **Supabase**.
-- **URL API** : `https://edumanager.up.railway.app/api`
-- **Documentation UI** : `https://edumanager.up.railway.app/api/docs`
+- **URL API** : `https://edumanager-v1.up.railway.app/api`
+- **Documentation UI** : `https://edumanager-v1.up.railway.app/api/docs`
 - **Web App (Frontend)** : `https://edumanager-app.vercel.app/`
 
 ---
