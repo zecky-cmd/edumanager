@@ -32,6 +32,14 @@ export class EnseignantController {
     return this.enseignantService.findAll();
   }
 
+  @Get('stats/matieres')
+  @Roles(RoleUser.adm, RoleUser.dir, RoleUser.ens)
+  @ApiOperation({ summary: 'Récupérer les statistiques par matière' })
+  @ApiResponse({ status: 200, description: 'Statistiques calculées avec succès' })
+  getStatsByMatiere() {
+    return this.enseignantService.getStatsByMatiere();
+  }
+
   @Get(':id')
   @Roles(RoleUser.adm, RoleUser.dir, RoleUser.ens)
   @ApiOperation({ summary: 'Récupérer un enseignant par son ID' })

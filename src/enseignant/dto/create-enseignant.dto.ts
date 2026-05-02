@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsInt, IsOptional, IsString, MaxLength, IsEnum } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { StatutEnseignant } from '@prisma/client';
+import { StatutEnseignant, TypeContrat } from '@prisma/client';
 
 export class CreateEnseignantDto {
   @ApiProperty({
@@ -50,4 +50,14 @@ export class CreateEnseignantDto {
   @IsOptional()
   @IsEnum(StatutEnseignant, { message: 'Le statut doit être "actif" ou "inact"' })
   statut?: StatutEnseignant;
+
+  @ApiProperty({
+    description: 'Type de contrat de l\'enseignant',
+    enum: TypeContrat,
+    default: TypeContrat.permanent,
+    required: false,
+  })
+  @IsOptional()
+  @IsEnum(TypeContrat, { message: 'Le type de contrat doit être "permanent" ou "vacataire"' })
+  typeContrat?: TypeContrat;
 }

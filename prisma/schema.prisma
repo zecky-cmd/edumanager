@@ -74,7 +74,9 @@ model Classe {
   niveau      String        @db.VarChar(15)
   serie       String?       @db.VarChar(5)
   salle       String?       @db.VarChar(20)
-  capaciteMax Int           @default(60) @db.SmallInt
+  capaciteMax           Int           @default(60) @db.SmallInt
+  enseignantPrincipalId Int?
+  enseignantPrincipal   Enseignant?   @relation("ClasseProfPrincipal", fields: [enseignantPrincipalId], references: [id])
 
   inscriptions   Inscription[]
   matieresNiveau MatiereNiveau[]
@@ -148,6 +150,11 @@ enum StatutEnseignant {
   inact
 }
 
+enum TypeContrat {
+  permanent
+  vacataire
+}
+
 model Enseignant {
   id         Int              @id @default(autoincrement())
   userId     Int              @unique
@@ -156,8 +163,10 @@ model Enseignant {
   specialite String?          @db.VarChar(100)
   telephone  String?          @db.VarChar(20)
   statut     StatutEnseignant @default(actif)
+  typeContrat TypeContrat     @default(permanent)
 
-  matieresNiveau MatiereNiveau[]
+  classesPrincipales Classe[] @relation("ClasseProfPrincipal")
+  matieresNiveau     MatiereNiveau[]
 }
 
 enum Sexe {

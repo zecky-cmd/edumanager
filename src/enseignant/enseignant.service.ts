@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
-import { DatabaseService } from 'src/database/database.service';
+import { DatabaseService } from '../database/database.service';
 import { CreateEnseignantDto } from './dto/create-enseignant.dto';
 import { UpdateEnseignantDto } from './dto/update-enseignant.dto';
 
@@ -50,7 +50,7 @@ export class EnseignantService {
   }
 
   async findAll() {
-    return this.databaseService.enseignant.findMany({
+    const enseignants = await this.databaseService.enseignant.findMany({
       include: {
         user: {
           select: {
@@ -59,12 +59,60 @@ export class EnseignantService {
             email: true,
           },
         },
+        classesPrincipales: {
+          select: { id: true, nom: true },
+        },
+        matieresNiveau: {
+          include: {
+            matiere: { select: { id: true, nom: true } },
+            classe: { select: { id: true, nom: true } },
+            creneaux: { select: { heureDebut: true, heureFin: true } },
+          },
+        },
       },
       orderBy: {
         user: {
           nom: 'asc',
         },
       },
+    });
+
+    return enseignants.map((ens) => {
+      const matieresMap = new Map();
+      const classesMap = new Map();
+      let totalMinutes = 0;
+
+      ens.matieresNiveau.forEach((mn) => {
+        matieresMap.set(mn.matiere.id, mn.matiere.nom);
+        classesMap.set(mn.classe.id, mn.classe.nom);
+
+        mn.creneaux.forEach((creneau) => {
+          const debut = new Date(creneau.heureDebut);
+          const fin = new Date(creneau.heureFin);
+          const diffMs = fin.getTime() - debut.getTime();
+          if (diffMs > 0) {
+            totalMinutes += diffMs / (1000 * 60);
+          }
+        });
+      });
+
+      return {
+        id: ens.id,
+        userId: ens.userId,
+        matricule: ens.matricule,
+        specialite: ens.specialite,
+        telephone: ens.telephone,
+        statut: ens.statut,
+        typeContrat: ens.typeContrat,
+        user: ens.user,
+        matieres: Array.from(matieresMap.values()),
+        classes: {
+          count: classesMap.size,
+          noms: Array.from(classesMap.values()),
+        },
+        heuresSemaine: Math.round((totalMinutes / 60) * 10) / 10,
+        classesPrincipales: ens.classesPrincipales.map((c) => c.nom),
+      };
     });
   }
 
@@ -87,6 +135,7 @@ export class EnseignantService {
             classe: true,
           },
         },
+        classesPrincipales: true,
       },
     });
     if (!enseignant) {
@@ -138,5 +187,71 @@ export class EnseignantService {
       }
       throw error;
     }
+  }
+  async getStatsByMatiere() {
+    const matieresNiveaux = await this.databaseService.matiereNiveau.findMany({
+      include: {
+        matiere: { select: { id: true, nom: true } },
+        classe: { select: { id: true } },
+        enseignant: {
+          include: {
+            user: { select: { nom: true, prenom: true } },
+          },
+        },
+        creneaux: { select: { heureDebut: true, heureFin: true } },
+      },
+    });
+
+    const statsMap = new Map();
+
+    matieresNiveaux.forEach((mn) => {
+      const matId = mn.matiere.id;
+      if (!statsMap.has(matId)) {
+        statsMap.set(matId, {
+          matiereId: matId,
+          nomMatiere: mn.matiere.nom,
+          classesSet: new Set(),
+          enseignantsMap: new Map(),
+          totalMinutes: 0,
+        });
+      }
+
+      const stat = statsMap.get(matId);
+      
+      stat.classesSet.add(mn.classe.id);
+
+      if (mn.enseignant && mn.enseignant.user) {
+        const nom = mn.enseignant.user.nom || '';
+        const prenom = mn.enseignant.user.prenom || '';
+        const initiales = `${prenom.charAt(0)}${nom.charAt(0)}`.toUpperCase();
+        
+        stat.enseignantsMap.set(mn.enseignant.id, {
+          id: mn.enseignant.id,
+          nom,
+          prenom,
+          initiales,
+        });
+      }
+
+      mn.creneaux.forEach((creneau) => {
+        const debut = new Date(creneau.heureDebut);
+        const fin = new Date(creneau.heureFin);
+        const diffMs = fin.getTime() - debut.getTime();
+        if (diffMs > 0) {
+          stat.totalMinutes += diffMs / (1000 * 60);
+        }
+      });
+    });
+
+    const result = Array.from(statsMap.values()).map((stat) => ({
+      matiereId: stat.matiereId,
+      nomMatiere: stat.nomMatiere,
+      nombreClasses: stat.classesSet.size,
+      nombreEnseignants: stat.enseignantsMap.size,
+      totalHeuresSemaine: Math.round((stat.totalMinutes / 60) * 10) / 10,
+      enseignants: Array.from(stat.enseignantsMap.values()),
+    }));
+
+    return result.sort((a, b) => a.nomMatiere.localeCompare(b.nomMatiere));
   }
 }
