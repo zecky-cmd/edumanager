@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsInt, IsOptional, IsString, MaxLength, IsEnum } from 'class-validator';
+import { IsNotEmpty, IsInt, IsOptional, IsString, MaxLength, IsEnum, IsArray } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { StatutEnseignant, TypeContrat } from '@prisma/client';
 
@@ -22,14 +22,15 @@ export class CreateEnseignantDto {
   matricule?: string;
 
   @ApiProperty({
-    description: 'Domaine de spécialité (ex: Mathématiques)',
-    example: 'Mathématiques',
+    description: 'Liste des domaines de spécialité (ex: ["Mathématiques", "Physique"])',
+    example: ['Mathématiques', 'Physique'],
     required: false,
+    type: [String],
   })
   @IsOptional()
-  @IsString({ message: 'La spécialité doit être une chaîne de caractères' })
-  @MaxLength(100, { message: 'La spécialité ne doit pas dépasser 100 caractères' })
-  specialite?: string;
+  @IsArray({ message: 'Les spécialités doivent être un tableau' })
+  @IsString({ each: true, message: 'Chaque spécialité doit être une chaîne de caractères' })
+  specialites?: string[];
 
   @ApiProperty({
     description: 'Numéro de téléphone professionnel',

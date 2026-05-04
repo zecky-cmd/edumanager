@@ -100,7 +100,7 @@ export class EnseignantService {
         id: ens.id,
         userId: ens.userId,
         matricule: ens.matricule,
-        specialite: ens.specialite,
+        specialites: ens.specialites,
         telephone: ens.telephone,
         statut: ens.statut,
         typeContrat: ens.typeContrat,

@@ -160,7 +160,7 @@ model Enseignant {
   userId     Int              @unique
   user       User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   matricule  String?          @unique @db.VarChar(20)
-  specialite String?          @db.VarChar(100)
+  specialites String[]        @default([]) @db.VarChar(100)
   telephone  String?          @db.VarChar(20)
   statut     StatutEnseignant @default(actif)
   typeContrat TypeContrat     @default(permanent)
