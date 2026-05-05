@@ -261,6 +261,8 @@ enum TypeEvaluation {
   DS
   comp
   interro
+  examen
+  TP
 }
 
 model Evaluation {

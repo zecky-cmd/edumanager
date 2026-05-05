@@ -21,7 +21,7 @@ export class CreateEvaluationDto {
   titre: string;
 
   @IsNotEmpty({ message: 'Le type est requis' })
-  @IsEnum(TypeEvaluation, { message: 'Type invalide (DS, comp, interro)' })
+  @IsEnum(TypeEvaluation, { message: 'Type invalide (DS, comp, interro, examen, TP)' })
   type: TypeEvaluation;
 
   @IsNotEmpty({ message: 'La date est requise' })
