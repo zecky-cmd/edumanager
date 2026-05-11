@@ -372,12 +372,34 @@ model RubriqueFinanciere {
   anneeId        Int
   annee          AnneeScolaire @relation(fields: [anneeId], references: [id])
   libelle        String        @db.VarChar(100)
-  montant        Decimal       @db.Decimal(10, 0)
   cycle          CycleMatiere  @default(tous)
   estObligatoire Boolean       @default(true)
   ordre          Int           @default(1) @db.SmallInt
 
+  tarifs    TarifRubrique[]
   paiements Paiement[]
+}
+
+model CategorieTarifaire {
+  id          Int      @id @default(autoincrement())
+  nom         String   @unique @db.VarChar(50) // ex: "Affecté", "Non-Affecté"
+  description String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tarifs TarifRubrique[]
+}
+
+model TarifRubrique {
+  id          Int                @id @default(autoincrement())
+  rubriqueId  Int
+  rubrique    RubriqueFinanciere @relation(fields: [rubriqueId], references: [id], onDelete: Cascade)
+  categorieId Int
+  categorie   CategorieTarifaire @relation(fields: [categorieId], references: [id], onDelete: Cascade)
+  niveau      String             @db.VarChar(20) // ex: "6eme", "5eme"
+  montant     Decimal            @db.Decimal(10, 0)
+
+  @@unique([rubriqueId, categorieId, niveau])
 }
 
 enum ModePaiement {
