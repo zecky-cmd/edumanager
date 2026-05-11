@@ -6,6 +6,7 @@ import {
   MinLength,
   IsOptional,
   IsEnum,
+  IsBoolean,
 } from 'class-validator';
 import { RoleUser } from '../entities/user.entity'; // Updated import to use RoleUser
 
@@ -39,4 +40,8 @@ export class CreateUserDto {
     message: 'Le rôle doit être un rôle valide (adm, dir, ens, par, elv)',
   })
   role?: (typeof RoleUser)[keyof typeof RoleUser];
+
+  @IsOptional()
+  @IsBoolean({ message: 'Le statut actif doit être un booléen' })
+  estActif?: boolean;
 }
