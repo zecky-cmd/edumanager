@@ -23,23 +23,33 @@ export class DashboardService {
     });
 
     // 3. Statistiques Financières (Recouvrement Global)
-    // a. Calculer le total attendu (Rubriques obligatoires * Nombre d'élèves concernés)
-    const rubriques = await this.databaseService.rubriqueFinanciere.findMany({
-      where: { anneeId, estObligatoire: true },
+    const inscriptions = await this.databaseService.inscription.findMany({
+      where: { anneeId },
+      include: {
+        classe: true,
+        categorieTarifaire: {
+          include: {
+            tarifs: {
+              where: {
+                rubrique: { anneeId, estObligatoire: true },
+              },
+            },
+          },
+        },
+      },
     });
 
     let totalAttendu = 0;
-    for (const r of rubriques) {
-      const montant = parseFloat(r.montant.toString());
-      let count = 0;
-      if (r.cycle === 'tous') {
-        count = totalEleves;
-      } else {
-        count = await this.databaseService.eleve.count({
-          where: { inscriptions: { some: { anneeId, classe: { cycle: r.cycle as any } } } },
-        });
+    for (const ins of inscriptions) {
+      if (ins.categorieTarifaire) {
+        const tarifsConcernes = ins.categorieTarifaire.tarifs.filter(
+          (t) => t.niveau === ins.classe.niveau,
+        );
+        totalAttendu += tarifsConcernes.reduce(
+          (sum, t) => sum + parseFloat(t.montant.toString()),
+          0,
+        );
       }
-      totalAttendu += montant * count;
     }
 
     // b. Calculer le total déjà payé pour cette année

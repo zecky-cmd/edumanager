@@ -36,4 +36,13 @@ export class CreateInscriptionDto {
   @IsOptional()
   @IsEnum(StatutInscription, { message: 'Le statut doit être "ins", "ab" ou "exc"' })
   statut?: StatutInscription;
+
+  @ApiProperty({
+    description: 'ID de la catégorie tarifaire de l\'élève',
+    example: 1,
+    required: false,
+  })
+  @IsOptional()
+  @IsInt({ message: 'L\'ID de la catégorie doit être un nombre entier' })
+  categorieTarifaireId?: number;
 }
