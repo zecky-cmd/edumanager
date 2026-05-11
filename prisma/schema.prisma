@@ -228,14 +228,16 @@ enum StatutInscription {
 }
 
 model Inscription {
-  id       Int               @id @default(autoincrement())
-  anneeId  Int
-  annee    AnneeScolaire     @relation(fields: [anneeId], references: [id])
-  eleveId  Int
-  eleve    Eleve             @relation(fields: [eleveId], references: [id])
-  classeId Int
-  classe   Classe            @relation(fields: [classeId], references: [id])
-  statut   StatutInscription @default(ins)
+  id                   Int                @id @default(autoincrement())
+  anneeId              Int
+  annee                AnneeScolaire      @relation(fields: [anneeId], references: [id])
+  eleveId              Int
+  eleve                Eleve              @relation(fields: [eleveId], references: [id])
+  classeId             Int
+  classe               Classe             @relation(fields: [classeId], references: [id])
+  categorieTarifaireId Int?
+  categorieTarifaire   CategorieTarifaire? @relation(fields: [categorieTarifaireId], references: [id])
+  statut               StatutInscription  @default(ins)
 
   @@unique([anneeId, eleveId])
 }
@@ -387,7 +389,8 @@ model CategorieTarifaire {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  tarifs TarifRubrique[]
+  tarifs       TarifRubrique[]
+  inscriptions Inscription[]
 }
 
 model TarifRubrique {
