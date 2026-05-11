@@ -68,6 +68,10 @@ export class AuthService {
       throw new UnauthorizedException('Email ou mot de passe incorrect');
     }
 
+    if (user.estActif === false) {
+      throw new UnauthorizedException('Votre compte a été désactivé. Veuillez contacter l\'administration.');
+    }
+
     // Mettre à jour la date de dernière connexion
     await this.databaseService.user.update({
       where: { id: user.id },
